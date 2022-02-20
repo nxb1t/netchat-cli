@@ -1,7 +1,7 @@
 # netchat-cli
 Simple TCP socket client in C
 
-Checkout this [Post](https://nxb1t.neocities.org/blg/2022-02-20.html).
+Checkout this [Post](https://nxb1t.neocities.org/blg/2022-02-20.html) for some detailed description :).
 
 ## Screenshot
 
