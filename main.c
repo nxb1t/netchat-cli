@@ -9,6 +9,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <pthread.h>
+#define MAX_SIZE 2048
 
 void help_menu();
 
@@ -21,7 +22,7 @@ struct sockaddr_in host;
 int main(int argc, char *argv[]) {
     int port;
     pthread_t listen_thread;
-    char message[1024];
+    char message[MAX_SIZE];
 
     if(argc == 3) {
         for(int i=1;i<argc;i++) {
@@ -51,7 +52,7 @@ int main(int argc, char *argv[]) {
         pthread_create(&listen_thread, NULL, listen_sock, NULL);
 
         while(1) {
-            fgets(message, 1024, stdin);
+            fgets(message, MAX_SIZE, stdin);
             
             // send data
             if(send(sock, message, strlen(message), 0) < 0) {
@@ -72,15 +73,17 @@ void help_menu() {
 }
 
 void *listen_sock(void *argp) {
-    char reply[2048];
+    char reply[MAX_SIZE + 1];
     while(1) {
         // receive data 
-        if(recv(sock, reply, 2048, 0) < 0) {
-            printf("Failed to recieve message \n");
+        size_t r = recv(sock, reply, MAX_SIZE, 0);
+        if(r <= 0 || r > MAX_SIZE) {
+            fprintf(stderr, "Failed to recieve message \n");
             exit(1);
+        } else {
+            // NULL terminate string ( clear buffer and prevent String Termination Error)
+            reply[r] = '\0';
+            printf("%s", reply);
         }
-        printf("%s", reply);
-        // reset contents of reply
-        memset(reply, 0, 2048);
     }
 }
